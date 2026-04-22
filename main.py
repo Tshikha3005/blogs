@@ -6,6 +6,7 @@ from fastapi.templating import Jinja2Templates
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from data import posts
 from fastapi.middleware.cors import CORSMiddleware
+from schemas import PostCreate, PostResponse, PostsResponse
 
 app = FastAPI()
 
@@ -32,16 +33,31 @@ def home(request: Request): #fast api consider the function name as route name a
     "title": "home"
   })
 
-@app.get('/api/posts')
+@app.get('/api/posts', response_model=PostsResponse)
 def get_posts():
   return {"data": posts}
 
-@app.get("/api/posts/{post_id}")
+
+@app.post("/api/posts", response_model=PostResponse, status_code=status.HTTP_201_CREATED)
+def create_post(post: PostCreate):
+   new_id = max(p['id'] for p in posts) + 1 if posts else 1
+   new_post = {
+      "id": new_id,
+      "author": post.author,
+      "content": post.content,
+      "title": post.title,
+      "date_posted": "April 22, 2026"
+   }
+   posts.append(new_post)
+   return new_post
+
+
+@app.get("/api/posts/{post_id}", response_model=PostResponse)
 def get_post(post_id: int):
   for post in posts:
     if post.get("id") == post_id:
       return post
-    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Post was not found")
+  raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Post was not found")
   
 # @app.put("/api/posts/{post_id}")
 # def get_post(post_id: int, updated_post: posts):
