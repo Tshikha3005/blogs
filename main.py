@@ -5,9 +5,19 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from data import posts
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 
+
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=['*'],      # or ["*"] for dev
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
 templates = Jinja2Templates(directory="templates")
@@ -24,7 +34,7 @@ def home(request: Request): #fast api consider the function name as route name a
 
 @app.get('/api/posts')
 def get_posts():
-  return posts
+  return {"data": posts}
 
 @app.get("/api/posts/{post_id}")
 def get_post(post_id: int):
