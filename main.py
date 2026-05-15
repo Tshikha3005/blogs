@@ -1,4 +1,5 @@
-from fastapi import FastAPI, Request, HTTPException, status
+import uvicorn
+from fastapi import FastAPI, Request, HTTPException, status, Path
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
@@ -59,6 +60,11 @@ def get_post(post_id: int):
       return post
   raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Post was not found")
   
+
+@app.get('/hello/{name}/{age}') #/{name}/{age} pass it for path aprams
+async def hello(*,name:str= Path(...,min_length=3, max_length=20), age:int=Path(...,gt=1,lt=100)):
+    return {"name": name, "age":age}
+
 # @app.put("/api/posts/{post_id}")
 # def get_post(post_id: int, updated_post: posts):
 #   for post in posts:
@@ -112,3 +118,7 @@ def validation_exception_handler(request: Request, exception: RequestValidationE
         },
         status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
     )
+
+
+if __name__ == '__main__':
+   uvicorn.run("main:app", host='127.0.0.1', port=8000, reload=True)
