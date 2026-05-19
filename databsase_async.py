@@ -1,8 +1,8 @@
 import os
 import urllib.parse
 from dotenv import load_dotenv
-from sqlalchemy import create_engine
-from sqlalchemy.orm import DeclarativeBase, sessionmaker
+from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
+from sqlalchemy.orm import DeclarativeBase
 
 # DATABASE_URL = "mysql+pymysql://root:Bullsh!t@1a@localhost:3306/posts"
 # 1. Load the secrets from the .env file into Python's memory
@@ -18,17 +18,21 @@ DB_NAME = os.getenv("DB_NAME")
 safe_password = urllib.parse.quote_plus(DB_PASSWORD)
 # asyncmy is for async driver
 # 3. Use the safe_password variable here
-DATABASE_URL = f"mysql+pymysql://{DB_USER}:{safe_password}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+DATABASE_URL = f"mysql+asyncmy://{DB_USER}:{safe_password}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 # 4. Create the Engine
-engine = create_engine(DATABASE_URL)
+engine = create_async_engine(DATABASE_URL)
 
 # 5. Create the session factory
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+AsyncSessionLocal = async_sessionmaker(
+  engine,
+  class_=AsyncSession,
+  expire_on_commit=False
+)
 
 # 6. Create the base class for your tables
 class Base(DeclarativeBase):
   pass
 
-def get_db():
-  with SessionLocal() as db:
-    yield db
+async def get_db():
+  async with AsyncSessionLocal() as session:
+    yield session
