@@ -12,7 +12,7 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from databsase_async import Base, engine
 from routers import posts, users
-
+from models import User, Post
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
   #startup

@@ -7,7 +7,7 @@ from fastapi.templating import Jinja2Templates
 from starlette.exceptions import HTTPException as StarletteHTTPException
 # from data import posts
 from fastapi.middleware.cors import CORSMiddleware
-from schemas import PostCreate, PostResponse, PostUpdate, UserCreate, UserResponse, UserUpdate
+from schemas import PostCreate, PostResponse, PostUpdate, UserCreate, UserPublic, UserUpdate
 from typing import Annotated
 from sqlalchemy import select, func
 from sqlalchemy.orm import Session
@@ -46,7 +46,7 @@ def home(request: Request, db=Annotated[Session, Depends(get_db)]): #fast api co
 
 # Users...............................
 @app.post("/api/users",
-          response_model=UserResponse,
+          response_model=UserPublic,
           status_code=status.HTTP_201_CREATED)
 async def create_user(user: UserCreate, db: Annotated[Session, Depends(get_db)]):
   username_lower = user.username.strip().lower()
@@ -78,7 +78,7 @@ async def create_user(user: UserCreate, db: Annotated[Session, Depends(get_db)])
   db.refresh(new_user)
   return new_user
 
-@app.get("/api/users", response_model=list[UserResponse])
+@app.get("/api/users", response_model=list[UserPublic])
 async def get_users(db: Annotated[Session, Depends(get_db)]):
   result = db.execute(select(models.User))
   users = result.scalars().all()
@@ -89,7 +89,7 @@ async def get_users(db: Annotated[Session, Depends(get_db)]):
     )
   return users
 
-@app.get("/api/users/{user_id}", response_model=UserResponse)
+@app.get("/api/users/{user_id}", response_model=UserPublic)
 async def get_user_by_id(user_id: int,db: Annotated[Session, Depends(get_db)]):
   result = db.execute(select(models.User).where(models.id == user_id))
   user = result.scalars().first()
@@ -111,7 +111,7 @@ async def get_user_posts(user_id: int, db: Annotated[Session, Depends(get_db)]):
   posts = result.scalars().all()
   return posts
 
-@app.patch("/api/users/{user_id}", response_model=UserResponse)
+@app.patch("/api/users/{user_id}", response_model=UserPublic)
 async def user_update_fully(user_id:int, user_update: UserUpdate, db: Annotated[Session, Depends(get_db)]):
   result = db.execute(select(models.User).where(models.User.id == user_id))
   user = result.scalars().first()
