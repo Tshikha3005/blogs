@@ -4,7 +4,6 @@ from dotenv import load_dotenv
 from sqlalchemy import create_engine
 from sqlalchemy.orm import DeclarativeBase, sessionmaker
 
-# DATABASE_URL = "mysql+pymysql://root:********@localhost:3306/posts"
 # 1. Load the secrets from the .env file into Python's memory
 load_dotenv()
 
