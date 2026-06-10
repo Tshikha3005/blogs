@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
 from sqlalchemy.orm import DeclarativeBase
 
-# DATABASE_URL = "mysql+pymysql://root:Bullsh!t@1a@localhost:3306/posts"
+# DATABASE_URL = "mysql+pymysql://root:*********@localhost:3306/posts"
 # 1. Load the secrets from the .env file into Python's memory
 load_dotenv()
 
